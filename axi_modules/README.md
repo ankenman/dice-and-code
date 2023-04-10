@@ -1,3 +1,3 @@
 # AXI Modules
 
-This folder has primitive AXI modules for develoment and CI/CD.
+This folder has primitive AXI modules for development and CI/CD.
