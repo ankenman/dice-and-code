@@ -8,6 +8,8 @@ AxiInjector::AxiInjector(sc_core::sc_module_name name) :
     SC_METHOD(event_handler);
     sensitive << event;
     dont_initialize();
+
+//    socket.bind(*this);
 }
 
 auto AxiInjector::event_handler() -> void {
@@ -17,4 +19,5 @@ auto AxiInjector::event_handler() -> void {
 auto AxiInjector::start_of_simulation() -> void {
     event.notify(2, sc_core::SC_NS);
 }
+
 

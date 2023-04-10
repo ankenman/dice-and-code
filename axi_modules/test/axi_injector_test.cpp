@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <axi_modules/axi_injector.h>
 #include "systemc_fixture.h"
 
@@ -25,3 +26,11 @@ TEST_F(AxiInjectorTest, CanInstantiate) {
 TEST_F(AxiInjectorTest, TestEvent) {
     AdvanceSimulationTime();
 }
+
+TEST_F(AxiInjectorTest, TestNbTransportBw) {
+    tlm::tlm_generic_payload payload;
+    tlm::tlm_phase phase;
+    sc_core::sc_time time;
+    EXPECT_EQ(tlm::TLM_COMPLETED, injector.nb_transport_bw(payload, phase, time));
+}
+
