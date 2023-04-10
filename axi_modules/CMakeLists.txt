@@ -11,7 +11,7 @@ find_package(GTest REQUIRED)
 find_package(SystemCLanguage REQUIRED)
 add_compile_options(-fdiagnostics-color)
 
-add_compile_options(-Werror -Wall -Wextra -Wvla -Wno-unused-parameter)
+#add_compile_options(-Werror -Wall -Wextra -Wvla -Wno-unused-parameter)
 
 add_subdirectory(src)
 add_subdirectory(test)

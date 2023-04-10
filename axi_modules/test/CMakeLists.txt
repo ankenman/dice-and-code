@@ -1,5 +1,6 @@
 set(tests
         axi_injector_test.cpp
+        axi_loopback_test.cpp
 )
 
 foreach(test ${tests})
