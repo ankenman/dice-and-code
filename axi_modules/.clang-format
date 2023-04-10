@@ -1,0 +1,23 @@
+# Requires clang version >= 3.8
+BasedOnStyle: LLVM
+Standard: c++17
+#
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: Consecutive
+AlignOperands: true
+AlignTrailingComments: true
+AlignConsecutiveDeclarations: Consecutive
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakAfterDefinitionReturnType: TopLevel
+AlwaysBreakTemplateDeclarations: No
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+Cpp11BracedListStyle: true
+IndentCaseLabels: false
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Left
+SortIncludes: CaseSensitive
+SpaceAfterCStyleCast: true
+# vim: ft=yaml

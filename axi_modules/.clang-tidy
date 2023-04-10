@@ -1,0 +1,75 @@
+FormatStyle: file
+HeaderFilterRegex: '.*'
+WarningsAsErrors: '*'
+
+Checks: >
+  -*,
+  -clang-analyzer-*,
+  boost-*,
+  bugprone-*,
+  -bugprone-macro-parentheses,
+  -bugprone-narrowing-conversions,
+  google-build-explicit-make-pair,
+  google-explicit-constructor,
+  google-runtime-memset,
+  google-runtime-member-string-references,
+  google-readability-redundant-smartptr-get,
+  misc-argument-comment,
+  misc-assert-side-effect,
+  misc-fold-init-type,
+  misc-forward-declaration-namespace,
+  misc-inaccurate-erase,
+  misc-inefficient-algorithm,
+  misc-misplaced-const,
+  misc-move-*,
+  misc-multiple-statement-macro,
+  misc-new-delete-overloads,
+  misc-non-copyable-objects,
+  misc-pointer-and-integral-operation,
+  misc-redundant-expression,
+  misc-sizeof-*,
+  misc-string-*,
+  misc-suspicious-*,
+  misc-swapped-arguments,
+  misc-throw-by-value-catch-by-reference,
+  misc-unconventional-assign-operator,
+  misc-undelegated-constructor,
+  misc-uniqueptr-reset-release,
+  misc-unused-alias-decls,
+  misc-unused-using-decls,
+  modernize-avoid-bind,
+  modernize-concat-nested-namespaces,
+  modernize-loop-convert,
+  modernize-make-*,
+  modernize-pass-by-value,
+  modernize-raw-string-literal,
+  modernize-redundant-void-arg,
+  modernize-replace-auto-ptr,
+  modernize-shrink-to-fit,
+  modernize-use-*,
+  performance-*,
+  readability-const-return-type,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-deleted-default,
+  readability-inconsistent-declaration-parameter-name,
+  readability-redundant-*,
+  readability-simplify-boolean-expr,
+  readability-simplify-subscript-expr,
+  readability-static-definition-in-anonymous-namespace,
+  readability-string-compare,
+  readability-uniqueptr-delete-release
+
+CheckOptions:
+  - key:   misc-assert-side-effect.AssertMacros
+    value: ASSERT,ASSERT0,ASSERT1,ASSERT2,ASSERT3,ASSERTF,ASSERTN,ASSERTX,ARCHLIB_ASSERT,CM_ASSERT,CM_ASSERTX,PT_ASSERT
+  - key:   modernize-loop-convert.NamingStyle
+    value: lower_case
+  - key:   performance-unnecessary-value-param.AllowedTypes
+    value: shared_ptr;sc_module_name
+  - key:   readability-simplify-boolean-expr.ChainedConditionalReturn
+    value: '1'
+  - key:   readability-simplify-boolean-expr.ChainedConditionalAssignment
+    value: '1'
+
+# vim: sw=2:ft=yaml
