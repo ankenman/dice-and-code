@@ -7,7 +7,9 @@ class AxiModules(ConanFile):
 
     settings = "os", "compiler", "build_type", "arch", "cppstd"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    default_options = {"shared": True, "fPIC": True,
+                       "gtest:shared": True, "gtest:fPIC": True,
+                       "systemc:shared": True, "systemc:fPIC": True,}
 
     requires = (
         "gtest/1.13.0",

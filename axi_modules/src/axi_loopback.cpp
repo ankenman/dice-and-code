@@ -2,22 +2,29 @@
 
 using namespace axi;
 
-AxiLoopback::AxiLoopback(sc_core::sc_module_name name) :
-        sc_core::sc_module(name) {
+AxiLoopback::AxiLoopback(sc_core::sc_module_name name) : sc_core::sc_module(name)
+{
     SC_HAS_PROCESS(AxiLoopback);
     SC_METHOD(event_handler);
     sensitive << event;
     dont_initialize();
-
-//    socket.bind(*this);
+    socket.register_nb_transport_fw(this, &AxiLoopback::nb_transport_fw);
 }
 
-auto AxiLoopback::event_handler() -> void {
+auto
+AxiLoopback::event_handler() -> void
+{
     std::cout << "Hello from event handler : " << sc_core::sc_time_stamp() << std::endl;
 }
 
-auto AxiLoopback::start_of_simulation() -> void {
+auto
+AxiLoopback::start_of_simulation() -> void
+{
     event.notify(2, sc_core::SC_NS);
 }
-
-
+auto
+AxiLoopback::nb_transport_fw(tlm::tlm_generic_payload& payload, tlm::tlm_phase& phase,
+                             sc_core::sc_time& time) -> tlm::tlm_sync_enum
+{
+    return tlm::TLM_COMPLETED;
+}
