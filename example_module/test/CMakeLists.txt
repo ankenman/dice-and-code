@@ -4,7 +4,7 @@ set(tests
 
 foreach(test ${tests})
     string(REPLACE _test.cpp _test target ${test})
-    add_executable(${target} ${test} systemc_fixture.cc)
+    add_executable(${target} ${test} systemc_fixture.cc run_tests.cc)
     add_test(NAME ${target} COMMAND ${target})
-    target_link_libraries(${target} PRIVATE GTest::gtest GTest::gtest_main SystemC::systemc example_module)
+    target_link_libraries(${target} PRIVATE GTest::gtest GTest::gtest_main GTest::gmock SystemC::systemc example_module)
 endforeach()
