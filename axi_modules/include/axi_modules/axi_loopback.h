@@ -2,8 +2,10 @@
 
 #include <tlm>
 #include <tlm_utils/simple_target_socket.h>
+#include "axi_extension.h"
 
 namespace axi {
+
 
 class AxiLoopback : public sc_core::sc_module {
 public:
@@ -15,6 +17,8 @@ public:
 
 private:
     sc_core::sc_event event;
+    sc_core::sc_time period{1, sc_core::SC_NS};
     auto              event_handler() -> void;
+    tlm::tlm_generic_payload* okay_payload;
 };
 } // namespace axi

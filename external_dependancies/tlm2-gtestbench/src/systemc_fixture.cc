@@ -14,7 +14,7 @@ void SystemCFixture::RestartSim() {
   sc_core::sc_default_global_context = sc_core::sc_curr_simcontext;
 }
 
-void SystemCFixture::AdvanceSimulationTime(const sc_core::sc_time& timeOffset) {
+void SystemCFixture::   AdvanceSimulationTime(const sc_core::sc_time& timeOffset) {
   if (timeOffset == sc_core::sc_max_time()) {
     sc_core::sc_start();
   } else {

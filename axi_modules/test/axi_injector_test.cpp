@@ -5,8 +5,10 @@
 #include <tlm_utils/simple_target_socket.h>
 
 using namespace axi;
+using namespace tlm;
 
 using testing::_;
+using testing::Sequence;
 
 class MockLoopback : public sc_core::sc_module {
 public:
@@ -27,28 +29,32 @@ protected:
                                                 sc_core::SC_DO_NOTHING);
     }
 
-    void BuildTestbenchTop() override { injector.socket.bind(loopback.socket); }
+    void BuildTestbenchTop() override
+    {
+        if (injector)
+            injector.reset(new AxiInjector("TestInjector"));
+        else
+            injector = std::make_unique<AxiInjector>("TestInjector");
+        injector->socket.bind(loopback.socket);
+    }
 
-    AxiInjector  injector{"TestAxiInjector"};
-    MockLoopback loopback{"MockLoopback"};
+    std::unique_ptr<AxiInjector>      injector;
+    testing::StrictMock<MockLoopback> loopback{"MockLoopback"};
+
+    auto send_phase(tlm_phase phase) -> void
+    {
+        tlm_generic_payload payload;
+        sc_core::sc_time    time;
+        loopback.socket->nb_transport_bw(payload, phase, time);
+    }
 };
-
-TEST_F(AxiInjectorTest, CanInstantiate)
-{
-    EXPECT_TRUE(&injector);
-}
-
-TEST_F(AxiInjectorTest, TestEvent)
-{
-    AdvanceSimulationTime();
-}
 
 TEST_F(AxiInjectorTest, TestNbTransportBw)
 {
     tlm::tlm_generic_payload payload;
     tlm::tlm_phase           phase;
     sc_core::sc_time         time;
-    EXPECT_EQ(tlm::TLM_COMPLETED, injector.nb_transport_bw(payload, phase, time));
+    EXPECT_EQ(tlm::TLM_COMPLETED, injector->nb_transport_bw(payload, phase, time));
 }
 
 TEST_F(AxiInjectorTest, TestNbTransportFw)
@@ -57,6 +63,71 @@ TEST_F(AxiInjectorTest, TestNbTransportFw)
     tlm::tlm_phase           phase;
     sc_core::sc_time         time;
     EXPECT_CALL(loopback, nb_transport_fw(_, _, _));
-    injector.socket->nb_transport_fw(payload, phase, time);
+    injector->socket->nb_transport_fw(payload, phase, time);
     loopback.socket->nb_transport_bw(payload, phase, time);
+}
+
+TEST_F(AxiInjectorTest, WriteSequenceWithoutStartingReady)
+{
+    injector->create_write();
+
+    AdvanceSimulationTime(sc_core::sc_time(2, sc_core::SC_NS));
+
+    Sequence s;
+    auto     data_phase = axi::DATA;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_phase, _)).Times(3).InSequence(s);
+    auto data_last_phase = axi::DATA_LAST_CHUNK;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_last_phase, _)).Times(1).InSequence(s);
+    send_phase(WRITE_READY);
+
+    AdvanceSimulationTime();
+
+    send_phase(B_VALID);
+    EXPECT_FALSE(injector->has_write_in_progress());
+}
+
+TEST_F(AxiInjectorTest, WriteSequenceStartingReady)
+{
+    injector->create_write();
+
+    Sequence s;
+    auto     data_phase = axi::DATA;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_phase, _)).Times(3).InSequence(s);
+    auto data_last_phase = axi::DATA_LAST_CHUNK;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_last_phase, _)).Times(1).InSequence(s);
+    send_phase(WRITE_READY);
+
+    AdvanceSimulationTime();
+
+    send_phase(B_VALID);
+    EXPECT_FALSE(injector->has_write_in_progress());
+}
+
+TEST_F(AxiInjectorTest, AssertWriteReadyWithNoWrite)
+{
+    send_phase(WRITE_READY);
+    AdvanceSimulationTime(sc_core::sc_time{5, sc_core::SC_NS});
+}
+
+TEST_F(AxiInjectorTest, TwoWritesInSequence)
+{
+    injector->create_write();
+
+    Sequence s;
+    auto     data_phase = axi::DATA;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_phase, _)).Times(3).InSequence(s);
+    auto data_last_phase = axi::DATA_LAST_CHUNK;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_last_phase, _)).Times(1).InSequence(s);
+    send_phase(WRITE_READY);
+
+    AdvanceSimulationTime();
+    injector->create_write();
+    send_phase(B_VALID);
+    EXPECT_FALSE(injector->has_write_in_progress());
+    AdvanceSimulationTime(sc_core::sc_time{1, sc_core::SC_NS});
+    send_phase(WRITE_READY);
+    Sequence s1;
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_phase, _)).Times(3).InSequence(s1);
+    EXPECT_CALL(loopback, nb_transport_fw(_, data_last_phase, _)).Times(1).InSequence(s1);
+    AdvanceSimulationTime();
 }
